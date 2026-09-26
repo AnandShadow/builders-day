@@ -30,7 +30,13 @@ Perform these tasks strictly:
 
 Threat Detection: Identify the primary threat vector (e.g., Phishing URL, Fake KYC Request, Electricity Scam). If safe, output Safe.
 
-Risk Assessment: Assign a risk_index from 1 to 5, where 5 is the highest risk.
+Risk Assessment: Assign a risk_index from 1 to 5 using this strict rubric:
+1: Completely Safe / Normal communication.
+2: Suspicious but likely harmless (marketing spam, generic promotions).
+3: Moderate Risk (Unverified links, pushy language, but no immediate threat).
+4: High Risk (Clear phishing attempts, impersonation of authority, requests for OTP).
+5: Critical / Active Scam (Demanding immediate money transfer, stealing credentials, malicious APK links).
+Do not default to 5 unless the threat is severe and immediate.
 
 Translation and Extraction: Extract any vernacular text (Telugu, Hindi, slang) from the image and translate it to formal English.
 
@@ -74,8 +80,8 @@ async def analyze(
         if description:
             prompt_contents.append(f"\nUser-provided context/description: {description}")
         
-        # Instantiate the model and handle cases where gemini-1.5-flash is not supported
-        model_name = "gemini-1.5-flash"
+        # Instantiate the model and handle cases where gemini-2.0-flash is not supported
+        model_name = "gemini-2.0-flash"
         try:
             model = genai.GenerativeModel(model_name)
             response = model.generate_content(
@@ -85,7 +91,7 @@ async def analyze(
         except Exception as e:
             if "not found" in str(e).lower() or "404" in str(e) or "not supported" in str(e).lower():
                 # Fallback to other available Flash models
-                fallback_models = ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-flash-latest"]
+                fallback_models = ["gemini-2.5-flash", "gemini-1.5-flash", "gemini-flash-latest"]
                 success = False
                 last_err = e
                 for fb_model in fallback_models:

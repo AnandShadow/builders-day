@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ANALYST
+  ADMIN
+}
+
+enum Severity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String?
+  name          String?
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  scans         Scan[]
+}
+
+model Scan {
+  id            String       @id @default(cuid())
+  userId        String
+  rawInput      String?      @db.Text
+  imageUrl      String?
+  deviceContext String?      @db.Text // JSON string of user-agent/IP
+  riskScore     Int          // 0 to 100
+  summary       String       @db.Text
+  isScam        Boolean
+  createdAt     DateTime     @default(now())
+  
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  threatFlags   ThreatFlag[]
+
+  @@index([userId])
+}
+
+model ThreatFlag {
+  id                  String   @id @default(cuid())
+  scanId              String
+  severity            Severity
+  category            String   // e.g., "Urgency Tactics", "Phishing Link"
+  description         String   @db.Text
+  auditTrailReasoning String   @db.Text // XAI Explainability
+  
+  scan        Scan     @relation(fields: [scanId], references: [id], onDelete: Cascade)
+
+  @@index([scanId])
+}
