@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ShieldAlert, Key, Mail, ArrowRight, Loader2, CheckCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
@@ -49,9 +49,12 @@ export default function ForgotPasswordPage() {
             <CheckCircle className="w-16 h-16 text-emerald-500 mb-4" />
             <h2 className="text-2xl font-bold text-white mb-2">Password Reset Successful!</h2>
             <p className="text-slate-400 mb-6">Your password has been updated in the database.</p>
-            <Button asChild className="bg-emerald-600 hover:bg-emerald-700 text-white w-full">
-              <Link href="/login">Return to Sign In</Link>
-            </Button>
+            <Link 
+              href="/login" 
+              className={buttonVariants({ variant: "default", className: "bg-emerald-600 hover:bg-emerald-700 text-white w-full" })}
+            >
+              Return to Sign In
+            </Link>
           </CardContent>
         </Card>
       </div>
